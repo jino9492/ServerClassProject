@@ -25,5 +25,19 @@
     <div class="text-area">
         <div contenteditable="true" class="top-text-area"></div>
     </div>
+<?php
+   $conn = mysqli_connect("127.0.0.1", "root", "rootroot" , "dbtest");
+   $sql = "SELECT id, age FROM table01";
+   $result = mysqli_query($conn, $sql);
+   if (mysqli_num_rows($result) > 0) {
+   while($row = mysqli_fetch_assoc($result)) {
+   echo "str: " . $row["str"]. "<br>";
+   }
+   }else{
+   echo "테이블에 데이터가 없습니다.";
+   }
+   mysqli_close($conn); // 디비 접속 닫기
+?>
+
 </body>
 </html>
