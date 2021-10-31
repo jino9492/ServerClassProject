@@ -1,43 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Document</title>
 
-    <style>
-        [contenteditable] {
-            outline: none;
-        }
+        <style>
+            [contenteditable] {
+                outline: none;
+            }
 
-        .top-text-area > div:hover{
-            background-color : #f3f3f3;
+            [contentEditable] > div:has(br):not([data-div-placeholder-content]):before{
+                content:attr(data-placeholder);
+            }
+
+            .editable{
+                width: 1000px;
+                margin: 0 auto;
+            }
             
-        }
-        
-    </style>
+        </style>
 
-    <script>
-    </script>
-</head>
-<body>
-    <div class="text-area">
-        <div contenteditable="true" class="top-text-area"></div>
-    </div>
-<?php
-   $conn = mysqli_connect("127.0.0.1", "root", "rootroot" , "dbtest");
-   $sql = "SELECT id, age FROM table01";
-   $result = mysqli_query($conn, $sql);
-   if (mysqli_num_rows($result) > 0) {
-   while($row = mysqli_fetch_assoc($result)) {
-   echo "str: " . $row["str"]. "<br>";
-   }
-   }else{
-   echo "테이블에 데이터가 없습니다.";
-   }
-   mysqli_close($conn); // 디비 접속 닫기
-?>
+        <script>
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Enter') {
+                    enterkey();
+                    event.preventDefault()
+                }
+
+                if (event.key === 'Backspace'){
+                    backspace();
+                }
+
+                if (event.key === 'ArrowUp'){
+                    upArrow();
+                }
+
+                if (event.key === 'ArrowDown'){
+                    downArrow();
+                }
+            })
+
+            function enterkey() {
+                var div = document.createElement("div");
+                div.setAttribute('contenteditable', 'true')
+                div.setAttribute('class', 'editable');
+                div.setAttribute('onfocus', 'this.innerHTML = this.innerHTML');
+
+                var thisTextAreaDiv = document.activeElement;
+
+                thisTextAreaDiv.insertAdjacentElement('afterend', div);
+                div.focus();
+                
+            }
+
+            function backspace() {
+                var thisTextAreaDiv = document.activeElement;
+                var prevTextAreaDiv = thisTextAreaDiv.previousElementSibling;
+
+                if (thisTextAreaDiv.hasAttribute('class', 'editable') && window.getSelection().focusOffset == 0){
+                    prevTextAreaDiv.innerHTML += " " + thisTextAreaDiv.innerHTML;
+
+                    prevTextAreaDiv.focus();
+                    var range = document.createRange();
+                    range.selectNodeContents(prevTextAreaDiv); // 여기 수정 해야함.
+                    range.collapse(false);
+                    var sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                    thisTextAreaDiv.remove();
+                }
+            }
+
+            function upArrow(){
+                var thisTextAreaDiv = document.activeElement;
+                if (thisTextAreaDiv.hasAttribute('class', 'editable'))
+                    thisTextAreaDiv.previousElementSibling.focus();
+            }
+
+            function downArrow(){
+                var thisTextAreaDiv = document.activeElement;
+                if (thisTextAreaDiv.hasAttribute('class', 'editable'))
+                    thisTextAreaDiv.nextElementSibling.focus();
+            }
+
+            function placeCaretAtEnd(el) {
+                el.focus();
+                if (typeof window.getSelection != "undefined"
+                        && typeof document.createRange != "undefined") {
+                    var range = document.createRange();
+                    range.selectNodeContents(el);
+                    range.collapse(false);
+                    var sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                } else if (typeof document.body.createTextRange != "undefined") {
+                    var textRange = document.body.createTextRange();
+                    textRange.moveToElementText(el);
+                    textRange.collapse(false);
+                    textRange.select();
+                }
+            }
+        </script>
+    </head>
+<body onload="enterkey()">
+    <div id="text-area"></div>
 
 </body>
 </html>
