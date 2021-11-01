@@ -7,23 +7,39 @@
         <title>Document</title>
 
         <style>
+
             [contenteditable] {
                 outline: none;
             }
 
-            [contentEditable] > div:has(br):not([data-div-placeholder-content]):before{
-                content:attr(data-placeholder);
+            [contenteditable]:focus, [contenteditable]:hover{
+                background-color: #e3e3e3;
             }
 
             .editable{
+                display: flex;
                 width: 1000px;
                 margin: 0 auto;
+            }
+
+            #text-area{
+                background-color: #f3f3f3;
+                width: 1000px;
+                margin: 0 auto;
+            }
+
+            .selected{
+                background-color: skyblue !important;
             }
             
         </style>
 
         <script>
+            var ctrlDown;
+            
+
             document.addEventListener('keydown', event => {
+
                 if (event.key === 'Enter') {
                     enterkey();
                     event.preventDefault()
@@ -36,28 +52,58 @@
                 if (event.key === 'ArrowUp'){
                     upArrow();
                 }
+                
 
                 if (event.key === 'ArrowDown'){
                     downArrow();
                 }
+
+                if (event.key === 'Control')
+                    ctrlDown = true;
+                
+                if (ctrlDown){
+                    if (event.key === 'a'){
+                        ctrlA();
+                        ctrlDown = false;
+                    }
+                }
             })
+
+            var mouseDown = false;
+            document.onmousedown = function() { 
+                var editableDiv = document.getElementsByClassName("editable");
+                mouseDown = true;
+                if (mouseDown){
+                    for(var i = 0; i < editableDiv.length; i++)
+                        editableDiv[i].setAttribute('class', 'editable');
+                    mouseDown = false;
+                }
+            }
 
             function enterkey() {
                 var div = document.createElement("div");
                 div.setAttribute('contenteditable', 'true')
                 div.setAttribute('class', 'editable');
-                div.setAttribute('onfocus', 'this.innerHTML = this.innerHTML');
 
                 var thisTextAreaDiv = document.activeElement;
-
                 thisTextAreaDiv.insertAdjacentElement('afterend', div);
+
+                var wrapperDiv = document.getElementById('text-area');
+
+                linkParentChild(wrapperDiv, div);
+
                 div.focus();
+
+                delAllEditableSelectedDiv();
                 
             }
 
             function backspace() {
                 var thisTextAreaDiv = document.activeElement;
                 var prevTextAreaDiv = thisTextAreaDiv.previousElementSibling;
+
+                delAllEditableSelectedDiv();
+                
 
                 if (thisTextAreaDiv.hasAttribute('class', 'editable') && window.getSelection().focusOffset == 0){
                     prevTextAreaDiv.innerHTML += " " + thisTextAreaDiv.innerHTML;
@@ -102,6 +148,37 @@
                     textRange.select();
                 }
             }
+
+            function ctrlA(){
+                var editableDiv = document.getElementsByClassName("editable");
+
+                for(var i = 0; i < editableDiv.length; i++)
+                    editableDiv[i].setAttribute('class', 'editable selected');
+            }
+
+            function linkParentChild(parent, child){
+                if (isIterable(child))
+                    for (var i = 0; i < child.length; i++)
+                        parent.appendChild(child[i]);
+                else
+                    parent.appendChild(child);
+            }
+
+            function isIterable(obj) {
+                if (obj == null) {
+                    return false;
+                }
+                return typeof obj[Symbol.iterator] === 'function';
+                }
+
+            function delAllEditableSelectedDiv(){
+                var selectedTextAreaDiv = Array.from(document.getElementsByClassName('selected')).slice();
+
+                for (var i = 0; i < selectedTextAreaDiv.length; i++)
+                    selectedTextAreaDiv[i].remove();
+            }
+
+            
         </script>
     </head>
 <body onload="enterkey()">
