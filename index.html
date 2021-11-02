@@ -35,6 +35,15 @@
         </style>
 
         <script>
+            window.onload = function(){
+                var div = createDiv();
+                var wrapperDiv = document.getElementById('text-area');
+
+                linkParentChild(wrapperDiv, div);
+
+                div.focus();
+            }
+
             var ctrlDown;
             
 
@@ -45,18 +54,15 @@
                     event.preventDefault()
                 }
 
-                if (event.key === 'Backspace'){
-                    backspace();
-                }
+                if (event.key === 'Backspace')
+                    backspace(event);
 
-                if (event.key === 'ArrowUp'){
+                if (event.key === 'ArrowUp')
                     upArrow();
-                }
                 
 
-                if (event.key === 'ArrowDown'){
+                if (event.key === 'ArrowDown')
                     downArrow();
-                }
 
                 if (event.key === 'Control')
                     ctrlDown = true;
@@ -81,12 +87,7 @@
             }
 
             function enterkey() {
-                var div = document.createElement("div");
-                div.setAttribute('contenteditable', 'true')
-                div.setAttribute('class', 'editable');
-
-                var thisTextAreaDiv = document.activeElement;
-                thisTextAreaDiv.insertAdjacentElement('afterend', div);
+                var div = createDiv();
 
                 var wrapperDiv = document.getElementById('text-area');
 
@@ -98,25 +99,42 @@
                 
             }
 
-            function backspace() {
+            function backspace(e) {
                 var thisTextAreaDiv = document.activeElement;
                 var prevTextAreaDiv = thisTextAreaDiv.previousElementSibling;
+                var isEmpty;
+
+                isEmpty = false;
 
                 delAllEditableSelectedDiv();
+
+                if (document.getElementById('text-area').childElementCount == 1)
+                    isEmpty = true;
                 
 
-                if (thisTextAreaDiv.hasAttribute('class', 'editable') && window.getSelection().focusOffset == 0){
-                    prevTextAreaDiv.innerHTML += " " + thisTextAreaDiv.innerHTML;
+                if (thisTextAreaDiv.hasAttribute('class', 'editable') && window.getSelection().focusOffset == 0 && !isEmpty){
+                    var startContainer = prevTextAreaDiv.childNodes[0];
+                    if (startContainer != null)
+                        var startOffset = prevTextAreaDiv.childNodes[0].length;
+                    else{
+                        startContainer = prevTextAreaDiv;
+                        var startOffset = 0;
+                    }
+                    
+                    const newRange = document.createRange();
+                    newRange.setStart(startContainer, startOffset);
+                    newRange.collapse(true);
 
-                    prevTextAreaDiv.focus();
-                    var range = document.createRange();
-                    range.selectNodeContents(prevTextAreaDiv); // 여기 수정 해야함.
-                    range.collapse(false);
-                    var sel = window.getSelection();
-                    sel.removeAllRanges();
-                    sel.addRange(range);
+                    // Selection에 전달
+                    const selection = document.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(newRange);
+
                     thisTextAreaDiv.remove();
+                    e.preventDefault();
                 }
+                
+                
             }
 
             function upArrow(){
@@ -129,24 +147,6 @@
                 var thisTextAreaDiv = document.activeElement;
                 if (thisTextAreaDiv.hasAttribute('class', 'editable'))
                     thisTextAreaDiv.nextElementSibling.focus();
-            }
-
-            function placeCaretAtEnd(el) {
-                el.focus();
-                if (typeof window.getSelection != "undefined"
-                        && typeof document.createRange != "undefined") {
-                    var range = document.createRange();
-                    range.selectNodeContents(el);
-                    range.collapse(false);
-                    var sel = window.getSelection();
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                } else if (typeof document.body.createTextRange != "undefined") {
-                    var textRange = document.body.createTextRange();
-                    textRange.moveToElementText(el);
-                    textRange.collapse(false);
-                    textRange.select();
-                }
             }
 
             function ctrlA(){
@@ -169,7 +169,7 @@
                     return false;
                 }
                 return typeof obj[Symbol.iterator] === 'function';
-                }
+            }
 
             function delAllEditableSelectedDiv(){
                 var selectedTextAreaDiv = Array.from(document.getElementsByClassName('selected')).slice();
@@ -178,11 +178,19 @@
                     selectedTextAreaDiv[i].remove();
             }
 
-            
+            function createDiv(){
+                var div = document.createElement("div");
+                div.setAttribute('contenteditable', 'true')
+                div.setAttribute('class', 'editable');
+
+                var thisTextAreaDiv = document.activeElement;
+                thisTextAreaDiv.insertAdjacentElement('afterend', div);
+
+                return div;
+            }
         </script>
     </head>
-<body onload="enterkey()">
-    <div id="text-area"></div>
-
-</body>
+    <body>
+        <div id="text-area"></div>
+    </body>
 </html>
