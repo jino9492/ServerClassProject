@@ -89,9 +89,13 @@
             function enterkey() {
                 var div = createDiv();
 
-                var wrapperDiv = document.getElementById('text-area');
+                var thisTextAreaDiv = document.activeElement;
+                thisTextAreaDiv.insertAdjacentElement('afterend', div);
 
-                linkParentChild(wrapperDiv, div);
+                var parentDiv = document.getElementById('text-area');
+
+                if (parentDiv.childElementCount == 0)
+                    linkParentChild(parentDiv, div);
 
                 div.focus();
 
@@ -168,9 +172,6 @@
                 var div = document.createElement("div");
                 div.setAttribute('contenteditable', 'true')
                 div.setAttribute('class', 'editable');
-
-                var thisTextAreaDiv = document.activeElement;
-                thisTextAreaDiv.insertAdjacentElement('afterend', div);
 
                 return div;
             }
