@@ -7,25 +7,55 @@
         <title>Document</title>
 
         <style>
+            body{
+                margin: 0;
+            }
+
+            .tool-bar {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 200px;
+                height :100vh;
+                background-color: #f2f2f2;
+            }
 
             [contenteditable] {
                 outline: none;
             }
 
-            [contenteditable]:focus, [contenteditable]:hover{
+            [contenteditable]:focus{
                 background-color: #e3e3e3;
+            }
+
+            [contenteditable]:hover{
+                background-color: #e3e3e3;
+                transition:background-color .5s;
+            }
+
+            [contenteditable]:not(:hover){
+                background-color: white;
+                transition:background-color .5s;
+            }
+
+            [contenteditable]:empty:focus:before{
+                content: attr(placeholder);
+                color: gray;
             }
 
             .editable{
                 display: flex;
-                width: 1000px;
-                margin: 0 auto;
             }
 
             #text-area{
-                background-color: #f3f3f3;
-                width: 1000px;
-                margin: 0 auto;
+                width: 800px;
+                margin: 0 400px;
+                margin-top : 100px;
+                box-sizing: border-box;
+            }
+
+            #text-area:hover{
+                border: 1px solid pink;
             }
 
             .selected{
@@ -135,8 +165,9 @@
 
             function downArrow(){
                 var thisTextAreaDiv = document.activeElement;
+                var nextTextAreaDiv = thisTextAreaDiv.nextElementSibling;
                 if (thisTextAreaDiv.hasAttribute('class', 'editable'))
-                    thisTextAreaDiv.nextElementSibling.focus();
+                    caretSetEndPos(nextTextAreaDiv);
             }
 
             function ctrlA(){
@@ -172,7 +203,7 @@
                 var div = document.createElement("div");
                 div.setAttribute('contenteditable', 'true')
                 div.setAttribute('class', 'editable');
-
+                div.setAttribute('placeholder', 'Type Here');
                 return div;
             }
 
@@ -197,6 +228,7 @@
         </script>
     </head>
     <body>
+        <div class="tool-bar"></div>
         <div id="text-area"></div>
     </body>
 </html>
