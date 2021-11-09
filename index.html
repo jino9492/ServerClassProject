@@ -48,14 +48,10 @@
             }
 
             #text-area{
-                width: 800px;
+                width: 900px;
                 margin: 0 400px;
                 margin-top : 100px;
                 box-sizing: border-box;
-            }
-
-            #text-area:hover{
-                border: 1px solid pink;
             }
 
             .selected{
@@ -75,17 +71,29 @@
             }
 
             var ctrlDown;
-            
+            var copiedDiv = new Array();
 
             document.addEventListener('keydown', event => {
 
+                if (event.key === 'Backspace')
+                    backspace(event);
+
+                if (event.key !== 'Enter' && event.key !== 'Control' && event.key !== 'c' && event.key !== 'v'){
+                    var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
+
+                    for(var i = 0; i < selectedDiv.length; i++)
+                        selectedDiv[i].setAttribute('class', 'editable');
+                }
+
                 if (event.key === 'Enter') {
+                    var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
+                    
+                    for (var i = 0; i < selectedDiv.length; i++)
+                        selectedDiv[i].remove();
+
                     enterkey();
                     event.preventDefault()
                 }
-
-                if (event.key === 'Backspace')
-                    backspace(event);
 
                 if (event.key === 'ArrowUp')
                     upArrow();
@@ -100,18 +108,36 @@
                 if (ctrlDown){
                     if (event.key === 'a'){
                         ctrlA();
-                        ctrlDown = false;
+                    }
+                    var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
+
+                    if (event.key === 'c' && selectedDiv.length > 0){
+                        ctrlC();
+                        event.preventDefault();
+                    } 
+                    else if (event.key === 'c'){
+                        copiedDiv.length = 0;
+                    }
+
+                    if (event.key === 'v' && copiedDiv.length > 0){
+                        ctrlV();
+                        event.preventDefault();
                     }
                 }
             })
 
+            document.addEventListener('keyup', event => {
+                if( event.key === 'Control')
+                    ctrlDown = false;
+            })
+
             var mouseDown = false;
             document.onmousedown = function() { 
-                var editableDiv = document.getElementsByClassName("editable");
+                var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
                 mouseDown = true;
                 if (mouseDown){
-                    for(var i = 0; i < editableDiv.length; i++)
-                        editableDiv[i].setAttribute('class', 'editable');
+                    for(var i = 0; i < selectedDiv.length; i++)
+                        selectedDiv[i].setAttribute('class', 'editable');
                     mouseDown = false;
                 }
             }
@@ -175,6 +201,38 @@
 
                 for(var i = 0; i < editableDiv.length; i++)
                     editableDiv[i].setAttribute('class', 'editable selected');
+            }
+
+            function ctrlC(){
+                var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
+                copiedDiv.length = 0;
+                for(var i = 0; i < selectedDiv.length; i++){
+                    copiedDiv.push(selectedDiv[i].cloneNode(true));
+                }
+
+                console.log(copiedDiv);
+            }
+
+            function ctrlV(){
+                delAllEditableSelectedDiv();
+                var parent = document.getElementById("text-area");
+                var thisTextAreaDiv = document.activeElement;
+                for (var i = 0; i < copiedDiv.length; i++){
+                    if (parent.childElementCount == 0){
+                        linkParentChild(parent, copiedDiv[i]);
+                        thisTextAreaDiv = parent.childNodes[0];
+                        continue;
+                    }
+                    thisTextAreaDiv.insertAdjacentElement('afterend', copiedDiv[i]);
+                    thisTextAreaDiv = thisTextAreaDiv.nextElementSibling;
+                }
+                var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
+                for (var i = 0; i < selectedDiv.length; i++){
+                    selectedDiv[i].setAttribute('class', 'editable');
+                }
+
+                caretSetEndPos(copiedDiv[0])
+                console.log(copiedDiv);
             }
 
             function linkParentChild(parent, child){
