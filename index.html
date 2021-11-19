@@ -4,20 +4,90 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Document</title>
+        <title>Portfolio</title>
 
         <style>
             body{
-                margin: 0;
-            }
-
-            .tool-bar {
                 position: absolute;
                 top: 0;
                 left: 0;
-                width: 200px;
+                margin: 0;
+
+                width: 1903px;
+                height: 100vh;
+            }
+
+            .side-bar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 300px;
                 height :100vh;
-                background-color: #f2f2f2;
+                border-right: 1px solid #e3e3e3;
+                box-sizing: border-box;
+            }
+
+            .side-bar-title {
+                width: inherit;
+                height: 100px;
+                background-color: #333333;
+                text-align: center;
+                line-height: 100px;
+
+                color: white;
+                font-size: 42px;
+                font-weight: bold;
+                text-shadow: black 3px 3px;
+            }
+
+            .user-form-wrapper{
+                padding-top: 20px;
+                padding-left: 40px;
+                height: 100px;
+            }
+
+            .user-form-wrapper > form{
+                position: relative;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .user-ID{
+                display: inline;
+                width: 221px;
+                padding-bottom: 4px;
+                border-bottom: 1px solid #e3e3e3;
+            }
+
+            .user-PW{
+                display: inline;
+                width: 221px;
+                padding-bottom: 4px;
+                border-bottom: 1px solid #e3e3e3;
+            }
+
+            .user-label{
+                display: inline-block;
+                width: 40px;
+                text-align: center;
+                color: gray;
+            }
+
+            .user-input{
+                outline: none;
+                border: none;
+            }
+
+            .user-submit{
+                width: 220px;
+
+                padding: 4px;
+                border: none;
+                border-radius: 5px;
+            }
+
+            .user-submit:hover{
+                cursor: pointer;
             }
 
             [contenteditable] {
@@ -43,23 +113,55 @@
                 color: gray;
             }
 
+            .editable-wrapper{
+                display:flex;
+                width: 900px;
+            }
+
             .editable{
-                display: flex;
+                width: 850px;
+                border-right: 1px solid #e3e3e3;
+                padding: 0 10px;
+            }
+
+            .editable-number{
+                color: #e2e2e2;
+                width: 50px;
+                text-align: center;
+                border-right: 1px solid #e3e3e3;
+                border-left: 1px solid #e3e3e3;
+            }
+
+            .text-area-wrapper{
+                position: relative;
+                width: calc(100vw - (100vw - 100%) - 300px);
+                height: 10px;
+                margin-left: 300px;
+                justify-content: center;
             }
 
             #text-area{
+                position: absolute;
+                left: calc(50% - 450px);
+
+                display:flex;
+                flex-direction: column;
                 width: 900px;
-                margin: 0 400px;
                 margin-top : 100px;
                 box-sizing: border-box;
+
+                border-top: 1px solid #e2e2e2;
+                border-bottom: 1px solid #e2e2e2;
             }
 
-            .selected{
+            .selected > div{
                 background-color: skyblue !important;
             }
-            
         </style>
 
+        <script src='/functions.js'></script>
+        <script src='/keyEvents.js'></script>
+        <script src='/mouseEvents.js'></script>
         <script>
             window.onload = function(){
                 var div = createDiv();
@@ -67,226 +169,31 @@
 
                 linkParentChild(wrapperDiv, div);
 
-                div.focus();
-            }
-
-            var ctrlDown;
-            var copiedDiv = new Array();
-
-            document.addEventListener('keydown', event => {
-
-                if (event.key === 'Backspace')
-                    backspace(event);
-
-                if (event.key !== 'Enter' && event.key !== 'Control' && event.key !== 'c' && event.key !== 'v'){
-                    var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
-
-                    for(var i = 0; i < selectedDiv.length; i++)
-                        selectedDiv[i].setAttribute('class', 'editable');
-                }
-
-                if (event.key === 'Enter') {
-                    var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
-                    
-                    for (var i = 0; i < selectedDiv.length; i++)
-                        selectedDiv[i].remove();
-
-                    enterkey();
-                    event.preventDefault()
-                }
-
-                if (event.key === 'ArrowUp')
-                    upArrow();
-                
-
-                if (event.key === 'ArrowDown')
-                    downArrow();
-
-                if (event.key === 'Control')
-                    ctrlDown = true;
-                
-                if (ctrlDown){
-                    if (event.key === 'a'){
-                        ctrlA();
-                    }
-                    var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
-
-                    if (event.key === 'c' && selectedDiv.length > 0){
-                        ctrlC();
-                        event.preventDefault();
-                    } 
-                    else if (event.key === 'c'){
-                        copiedDiv.length = 0;
-                    }
-
-                    if (event.key === 'v' && copiedDiv.length > 0){
-                        ctrlV();
-                        event.preventDefault();
-                    }
-                }
-            })
-
-            document.addEventListener('keyup', event => {
-                if( event.key === 'Control')
-                    ctrlDown = false;
-            })
-
-            var mouseDown = false;
-            document.onmousedown = function() { 
-                var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
-                mouseDown = true;
-                if (mouseDown){
-                    for(var i = 0; i < selectedDiv.length; i++)
-                        selectedDiv[i].setAttribute('class', 'editable');
-                    mouseDown = false;
-                }
-            }
-
-            function enterkey() {
-                var div = createDiv();
-
-                var thisTextAreaDiv = document.activeElement;
-                thisTextAreaDiv.insertAdjacentElement('afterend', div);
-
-                var parentDiv = document.getElementById('text-area');
-
-                if (parentDiv.childElementCount == 0)
-                    linkParentChild(parentDiv, div);
-
-                div.focus();
-
-                delAllEditableSelectedDiv();
-                
-            }
-
-            function backspace(e) {
-                var thisTextAreaDiv = document.activeElement;
-                var prevTextAreaDiv = thisTextAreaDiv.previousElementSibling;
-                var isEmpty;
-
-                isEmpty = false;
-
-                delAllEditableSelectedDiv();
-
-                if (document.getElementById('text-area').childElementCount == 1)
-                    isEmpty = true;
-                
-
-                if (thisTextAreaDiv.hasAttribute('class', 'editable') && window.getSelection().focusOffset == 0 && !isEmpty){
-                    caretSetEndPos(prevTextAreaDiv);
-
-                    thisTextAreaDiv.remove();
-                    e.preventDefault();
-                }
-                
-                
-            }
-
-            function upArrow(){
-                var thisTextAreaDiv = document.activeElement;
-                var prevTextAreaDiv = thisTextAreaDiv.previousElementSibling;
-                if (thisTextAreaDiv.hasAttribute('class', 'editable'))
-                    caretSetEndPos(prevTextAreaDiv);
-            }
-
-            function downArrow(){
-                var thisTextAreaDiv = document.activeElement;
-                var nextTextAreaDiv = thisTextAreaDiv.nextElementSibling;
-                if (thisTextAreaDiv.hasAttribute('class', 'editable'))
-                    caretSetEndPos(nextTextAreaDiv);
-            }
-
-            function ctrlA(){
-                var editableDiv = document.getElementsByClassName("editable");
-
-                for(var i = 0; i < editableDiv.length; i++)
-                    editableDiv[i].setAttribute('class', 'editable selected');
-            }
-
-            function ctrlC(){
-                var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
-                copiedDiv.length = 0;
-                for(var i = 0; i < selectedDiv.length; i++){
-                    copiedDiv.push(selectedDiv[i].cloneNode(true));
-                }
-
-                console.log(copiedDiv);
-            }
-
-            function ctrlV(){
-                delAllEditableSelectedDiv();
-                var parent = document.getElementById("text-area");
-                var thisTextAreaDiv = document.activeElement;
-                for (var i = 0; i < copiedDiv.length; i++){
-                    if (parent.childElementCount == 0){
-                        linkParentChild(parent, copiedDiv[i]);
-                        thisTextAreaDiv = parent.childNodes[0];
-                        continue;
-                    }
-                    thisTextAreaDiv.insertAdjacentElement('afterend', copiedDiv[i]);
-                    thisTextAreaDiv = thisTextAreaDiv.nextElementSibling;
-                }
-                var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
-                for (var i = 0; i < selectedDiv.length; i++){
-                    selectedDiv[i].setAttribute('class', 'editable');
-                }
-
-                caretSetEndPos(copiedDiv[0])
-                console.log(copiedDiv);
-            }
-
-            function linkParentChild(parent, child){
-                if (isIterable(child))
-                    for (var i = 0; i < child.length; i++)
-                        parent.appendChild(child[i]);
-                else
-                    parent.appendChild(child);
-            }
-
-            function isIterable(obj) {
-                if (obj == null) {
-                    return false;
-                }
-                return typeof obj[Symbol.iterator] === 'function';
-            }
-
-            function delAllEditableSelectedDiv(){
-                var selectedTextAreaDiv = Array.from(document.getElementsByClassName('selected')).slice();
-
-                for (var i = 0; i < selectedTextAreaDiv.length; i++)
-                    selectedTextAreaDiv[i].remove();
-            }
-
-            function createDiv(){
-                var div = document.createElement("div");
-                div.setAttribute('contenteditable', 'true')
-                div.setAttribute('class', 'editable');
-                div.setAttribute('placeholder', 'Type Here');
-                return div;
-            }
-
-            function caretSetEndPos(prevTextAreaDiv){
-                var startContainer = prevTextAreaDiv.childNodes[0];
-                    if (startContainer != null)
-                        var startOffset = prevTextAreaDiv.childNodes[0].length;
-                    else{
-                        startContainer = prevTextAreaDiv;
-                        var startOffset = 0;
-                    }
-                    
-                    const newRange = document.createRange();
-                    newRange.setStart(startContainer, startOffset);
-                    newRange.collapse(true);
-
-                    // Selection에 전달
-                    const selection = document.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(newRange);
+                div.childNodes[1].focus();
             }
         </script>
     </head>
     <body>
-        <div class="tool-bar"></div>
-        <div id="text-area"></div>
+        <div class="side-bar">
+            <div class="side-bar-title">Portfolio</div>
+            <div class="user-form-wrapper">
+                <form action="post">
+                    <div class="user-ID">
+                        <div class="user-label" id="user-ID-label">ID</div>
+                        <input type="text" class="user-input" id="user-ID-input" name="user-ID">
+                    </div>
+                    <br>
+                    <div class="user-PW">
+                        <div class="user-label" id="user-PW-label">PW</div>
+                        <input type="text" class="user-input" id="user-PW-input" name="user-PW">
+                    </div>
+                    <br>
+                    <button type="submit" class="user-submit">Submit</button>
+                </form>
+            </div>
+        </div>
+        <div class="text-area-wrapper">
+            <div id="text-area"></div>
+        </div>
     </body>
 </html>
