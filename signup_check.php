@@ -1,10 +1,5 @@
 <?php
-    $host = 'localhost';
-    $user = 'root';
-    $password = 'wjdwlsdh112';
-    $database = 'userInfo';
-
-    $connect = mysqli_connect($host, $user, $password, $database) or die("fail");
+    include("db_connect.php");
 
     session_start();
     $email = addslashes($_POST['userEmail']);

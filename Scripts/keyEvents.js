@@ -2,7 +2,6 @@ var ctrlDown;
 var copiedDiv = new Array();
 
 document.addEventListener('keydown', event => {
-
     if (event.keyCode >= 65 && event.keyCode <= 90 && !ctrlDown)
         if (document.getElementsByClassName('selected').length !== 0) {
             delAllEditableSelectedDiv();
@@ -19,9 +18,9 @@ document.addEventListener('keydown', event => {
             selectedDiv[i].setAttribute('class', 'editable-wrapper');
     }
 
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && document.activeElement.tagName === 'div') {
         var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
-        
+
         for (var i = 0; i < selectedDiv.length; i++)
             selectedDiv[i].remove();
 

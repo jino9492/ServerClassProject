@@ -1,13 +1,7 @@
 <?php
     session_start();
     #DB connect
-    $host = 'localhost';
-    $user = 'root';
-    $password = 'wjdwlsdh112';
-    $database = 'userInfo';
-
-    $connect = mysqli_connect($host, $user, $password, $database) or die("fail");
-
+    include("db_connect.php");
 
     $id = addslashes($_POST['userID']);
     $pw = addslashes($_POST['userPW']);
