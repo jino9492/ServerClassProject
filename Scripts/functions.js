@@ -69,12 +69,23 @@ function caretSetEndPos(prevTextAreaDiv){
 function setColumnNubmer(){
     var count = 1;
 
-    document.getElementById('text-area').childNodes.forEach(element => {
-        element.setAttribute('id', 'editable-wrapper-id-' + count);
-        element.childNodes[0].setAttribute('id', 'editable-number-id-' + count);
-        element.childNodes[0].innerHTML = count;
-        element.childNodes[1].setAttribute('id', 'editable-id-' + count);
+    var textArea = document.getElementById('text-area');
+
+    for (var i = 0; i < textArea.childElementCount; i++){
+        textArea.children[i].setAttribute('id', 'editable-wrapper-id-' + count);
+        textArea.children[i].children[0].setAttribute('id', 'editable-number-id-' + count);
+        textArea.children[i].children[0].innerHTML = count;
+        textArea.children[i].children[1].setAttribute('id', 'editable-id-' + count);
 
         count++;
-    });
+    }
+
+    // document.getElementById('text-area').childNodes.forEach(element => {
+    //     element.setAttribute('id', 'editable-wrapper-id-' + count);
+    //     element.childNodes[0].setAttribute('id', 'editable-number-id-' + count);
+    //     element.childNodes[0].innerHTML = count;
+    //     element.childNodes[1].setAttribute('id', 'editable-id-' + count);
+
+    //     count++;
+    // });
 }

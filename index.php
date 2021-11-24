@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php
 session_start();
- ?>
+?>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -90,6 +90,9 @@ session_start();
             }
 
             button.user-submit > a{
+                display: inline-block;
+                width: inherit;
+                height: inherit;
                 text-decoration: none;
                 color: black;
             }
@@ -141,7 +144,7 @@ session_start();
                 border-left: 1px solid #e3e3e3;
             }
 
-            .text-area-wrapper{
+            #text-area-wrapper{
                 position: relative;
                 width: calc(100vw - (100vw - 100%) - 300px);
                 height: 10px;
@@ -160,6 +163,12 @@ session_start();
                 box-sizing: border-box;
             }
 
+            #text-area::after{
+                content: "";
+                width: 900px;
+                height: 100px;
+            }
+
             .selected > div{
                 background-color: skyblue !important;
             }
@@ -168,15 +177,36 @@ session_start();
         <script src='./Scripts/functions.js'></script>
         <script src='./Scripts/keyEvents.js'></script>
         <script src='./Scripts/mouseEvents.js'></script>
+        <script src="//code.jquery.com/jquery.min.js"></script>
         <script>
             window.onload = function(){
-                var div = createDiv();
-                var wrapperDiv = document.getElementById('text-area');
+                <?php
+                    if (isset($_SESSION['userID'])) {
+                        include("db_connect.php");
 
-                linkParentChild(wrapperDiv, div);
-
-                div.childNodes[1].focus();
+                        $id = $_SESSION['userID'];
+                        $query = "SELECT content FROM userContent WHERE userID='$id'";
+                        $res = mysqli_query($connect, $query);
+                        $row = mysqli_fetch_array($res);
+                        $num = mysqli_num_rows($res);
+                    }
+                ?>
             }
+
+            var interval = 1000;
+            var xmlHttp = new XMLHttpRequest();
+
+            function sendData(){
+                var content = document.getElementById('text-area-wrapper').innerHTML;
+                content = content.trim();
+
+                var url = "./Ajax/get_content_data.php";
+                console.log(url);
+                xmlHttp.open("POST", url, true);
+                xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xmlHttp.send("data=" + content + "&userID=" + "<?php if (isset($_SESSION['userID'])) {echo $_SESSION['userID'];}else {echo "";} ?>");
+            }
+            setInterval(sendData, interval);
         </script>
     </head>
     <body>
@@ -185,8 +215,8 @@ session_start();
             <div class="user-form-wrapper">
             <?php
                 if(isset($_SESSION['userID'])){ ?>
-                    <div><?php echo $_SESSION['userID']; ?> 로그인 됨</div>
-                    <button class="user-submit"><a href="./logout.php">로그아웃</a></button>
+                    <div>Sign in as <?php echo $_SESSION['userID']; ?></div>
+                    <button class="user-submit"><a href="./logout.php">Logout</a></button>
                 <?php
                 }
                 else if (!isset($_SESSION['userID']) || !isset($_SESSION['userPW'])) { ?>
@@ -201,16 +231,29 @@ session_start();
                             <input type="text" class="user-input" id="user-PW-input" name="userPW">
                         </div>
                         <br>
-                        <button type="submit" class="user-submit">Submit</button>
+                        <button type="submit" class="user-submit">SignIn</button>
                         <br>
-                        <button class="user-submit"><a href="./signup.php">회원가입</a></button>
-                    </form><?php
+                    </form>
+                    <button class="user-submit"><a href="./signup.php">SignUp</a></button><?php
                 }
                 ?>
             </div>
         </div>
-        <div class="text-area-wrapper">
-            <div id="text-area"></div>
+        <div id="text-area-wrapper">
+        <?php
+            if(!isset($_SESSION['userID'])){?>    
+                <div id="text-area">
+                    <div class="editable-wrapper">
+                        <div class="editable-number">1</div>
+                        <div class="editable" placeholder="Type Here" contenteditable="true"></div>
+                    </div>
+                </div>
+            <?php
+            }
+            else{
+                echo $row['content'];
+            }
+        ?>
         </div>
     </body>
 </html>

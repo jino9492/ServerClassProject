@@ -82,7 +82,7 @@
                     <input type="text" class="user-input" id="user-PW-input" name="userPW">
                 </div>
                 <br>
-                <button type="submit" class="user-submit">Submit</button>
+                <button type="submit" class="user-submit">SignUp</button>
             </form>
         </div>
     </body>

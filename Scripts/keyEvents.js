@@ -2,6 +2,7 @@ var ctrlDown;
 var copiedDiv = new Array();
 
 document.addEventListener('keydown', event => {
+
     if (event.keyCode >= 65 && event.keyCode <= 90 && !ctrlDown)
         if (document.getElementsByClassName('selected').length !== 0) {
             delAllEditableSelectedDiv();
@@ -18,14 +19,17 @@ document.addEventListener('keydown', event => {
             selectedDiv[i].setAttribute('class', 'editable-wrapper');
     }
 
-    if (event.key === 'Enter' && document.activeElement.tagName === 'div') {
+    if (event.key === 'Enter' && document.activeElement.className == 'editable') {
         var selectedDiv = Array.from(document.getElementsByClassName('selected')).slice();
 
         for (var i = 0; i < selectedDiv.length; i++)
             selectedDiv[i].remove();
-
+        
         enterkey();
-        event.preventDefault()
+        event.preventDefault();
+    }
+    else if (event.key === 'Enter') {
+        event.preventDefault();
     }
 
     if (event.key === 'ArrowUp')
@@ -57,8 +61,9 @@ document.addEventListener('keydown', event => {
             event.preventDefault();
         }
     }
-
-    setColumnNubmer();
+    
+    if (document.getElementById('text-area').childElementCount > 0)
+        setColumnNubmer();
 })
 
 document.addEventListener('keyup', event => {
