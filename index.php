@@ -228,10 +228,10 @@ session_start();
                         <br>
                         <div class="user-PW">
                             <div class="user-label" id="user-PW-label">PW</div>
-                            <input type="text" class="user-input" id="user-PW-input" name="userPW">
+                            <input type="password" class="user-input" id="user-PW-input" name="userPW">
                         </div>
                         <br>
-                        <button type="submit" class="user-submit">SignIn</button>
+                        <button type="submit" class="user-submit" disabled>SignIn</button>
                         <br>
                     </form>
                     <button class="user-submit"><a href="./signup.php">SignUp</a></button><?php
@@ -241,7 +241,7 @@ session_start();
         </div>
         <div id="text-area-wrapper">
         <?php
-            if(!isset($_SESSION['userID'])){?>    
+            if(!isset($_SESSION['userID']) || !isset($row['content'])){?>    
                 <div id="text-area">
                     <div class="editable-wrapper">
                         <div class="editable-number">1</div>

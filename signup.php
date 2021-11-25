@@ -79,7 +79,7 @@
                 <br>
                 <div class="user-PW">
                     <div class="user-label" id="user-PW-label">PW</div>
-                    <input type="text" class="user-input" id="user-PW-input" name="userPW">
+                    <input type="password" class="user-input" id="user-PW-input" name="userPW">
                 </div>
                 <br>
                 <button type="submit" class="user-submit">SignUp</button>

@@ -7,7 +7,7 @@ document.addEventListener('keydown', event => {
         if (document.getElementsByClassName('selected').length !== 0) {
             delAllEditableSelectedDiv();
         }
-
+    
     if (event.key === 'Backspace') {
         backspace(event);
     }
@@ -62,13 +62,16 @@ document.addEventListener('keydown', event => {
         }
     }
     
-    if (document.getElementById('text-area').childElementCount > 0)
+    if (document.getElementById('text-area').childElementCount > 0) {
         setColumnNubmer();
+    }
 })
 
 document.addEventListener('keyup', event => {
     if( event.key === 'Control')
         ctrlDown = false;
+    
+        checkInputData();
 })
 
 function enterkey() {

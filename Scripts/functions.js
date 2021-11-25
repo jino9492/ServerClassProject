@@ -89,3 +89,27 @@ function setColumnNubmer(){
     //     count++;
     // });
 }
+
+function checkInputData() {
+    var button = document.getElementsByClassName('user-submit')[0];
+    var inputs = document.getElementsByClassName('user-input');
+
+    console.log(inputs);
+
+    var isEmpty = false;
+
+    for (var i = 0; i < inputs.length; i++){
+        if (inputs[i].value == '') {
+            isEmpty = true;
+            break;
+        }
+        else {
+            isEmpty = false;
+        }
+    }
+
+    if (isEmpty)
+        button.disabled = true;
+    else
+        button.disabled = false;
+}
